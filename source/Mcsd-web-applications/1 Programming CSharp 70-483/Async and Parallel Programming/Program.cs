@@ -31,7 +31,6 @@ namespace Async_and_Parallel_Programming
                 value2 = value2 + new ComputationThing(7).Compute();
             }));
             Task.WaitAll(tasks.ToArray());
-
             Console.WriteLine("Bad task example: " + value2);
 
             //Task example with critical section Lock example
@@ -60,9 +59,25 @@ namespace Async_and_Parallel_Programming
                 }
             }));
             Task.WaitAll(tasks2.ToArray());
-
             Console.WriteLine("Task example with critical section Lock example: " + value3);
 
+            //Task example with critical section InterLock example
+            var tasks3 = new List<Task>();
+            var value4 = 0;
+            tasks3.Add(Task.Factory.StartNew(() => {
+                var val = new ComputationThing(2).Compute();
+                Interlocked.Add(ref value4, val);
+            }));
+            tasks3.Add(Task.Factory.StartNew(() => {
+                var val = new ComputationThing(1).Compute();
+                Interlocked.Add(ref value4, val);
+            }));
+            tasks3.Add(Task.Factory.StartNew(() => {
+                var val = new ComputationThing(7).Compute();
+                Interlocked.Add(ref value4, val);
+            }));
+            Task.WaitAll(tasks3.ToArray());
+            Console.WriteLine("Task example with critical section InterLock example: " + value3);
 
             Console.ReadLine();
         }
